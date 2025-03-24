@@ -89,13 +89,47 @@ jQuery(document).ready(function($) {
       }
     });
     if (ferror) return false;
-    else var str = $(this).serialize();
+
+    // Prepare the data for the Mailtrap API
+    var emailData = {
+      "to": [
+        {
+          "email": "itaru.work.1218@gmail.com",
+          "name": "John Doe"
+        }
+      ],
+      "from": {
+        "email": "adswang.dev@example.com",
+        "name": "Example Sales Team"
+      },
+      "attachments": [
+        {
+          "content": "PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImVuIj4KCiAgICA8aGVhZD4KICAgICAgICA8bWV0YSBjaGFyc2V0PSJVVEYtOCI+CiAgICAgICAgPG1ldGEgaHR0cC1lcXVpdj0iWC1VQS1Db21wYXRpYmxlIiBjb250ZW50PSJJRT1lZGdlIj4KICAgICAgICA8bWV0YSBuYW1lPSJ2aWV3cG9ydCIgY29udGVudD0id2lkdGg9ZGV2aWNlLXdpZHRoLCBpbml0aWFsLXNjYWxlPTEuMCI+CiAgICAgICAgPHRpdGxlPkRvY3VtZW50PC90aXRsZT4KICAgIDwvaGVhZD4KCiAgICA8Ym9keT4KCiAgICA8L2JvZHk+Cgo8L2h0bWw+Cg==",
+          "filename": "index.html",
+          "type": "text/html",
+          "disposition": "attachment"
+        }
+      ],
+      "custom_variables": {
+        "user_id": "45982",
+        "batch_id": "PSJ-12"
+      },
+      "subject": "Your Example Order Confirmation",
+      "text": "Congratulations on your order no. 1234",
+      "category": "API Test"
+    };
+
     $.ajax({
       type: "POST",
-      url: "contactform/contactform.php",
-      data: str,
+      url: "https://send.api.mailtrap.io/api/send",
+      data: JSON.stringify(emailData),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Api-Token": "fec24e2ab26acf1dfff1d5a4928acfc8"
+      },
       success: function(msg) {
-        // alert(msg);
+        alert("Email sent successfully!");
         if (msg == 'OK') {
           $("#sendmessage").addClass("show");
           $("#errormessage").removeClass("show");
@@ -103,9 +137,9 @@ jQuery(document).ready(function($) {
         } else {
           $("#sendmessage").removeClass("show");
           $("#errormessage").addClass("show");
-          $('#errormessage').html(msg);
+          $('#errormessage').html("Failed to send email: " + msg);
         }
-
+        return false;
       }
     });
     return false;
